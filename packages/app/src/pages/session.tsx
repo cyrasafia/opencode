@@ -952,7 +952,11 @@ export default function Page() {
         ? (evt.details.properties as Record<string, unknown>)
         : undefined
     const file = typeof props?.file === "string" ? props.file : undefined
-    if (!file || file.startsWith(".git/")) return
+    if (!file) return
+    // Workspace file changes always re-run the vcs diff. .git/ changes (index,
+    // HEAD, refs from a commit/checkout done outside the session) also mean the
+    // vcs state moved, so refresh the diff even though the file watcher skips
+    // them for the file tree.
     refreshVcs()
   })
   onCleanup(stopVcs)
